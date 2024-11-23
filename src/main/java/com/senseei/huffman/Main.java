@@ -3,7 +3,7 @@ package com.senseei.huffman;
 import java.io.IOException;
 
 import com.senseei.huffman.interfaces.Compresser;
-import com.senseei.huffman.tools.Huffman;
+import com.senseei.huffman.tools.huffman.Huffman;
 
 public class Main {
     private static final String OUTPUT_DIR = "output_files";
