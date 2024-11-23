@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import com.senseei.huffman.entities.HuffmanTreeNode;
 import com.senseei.huffman.tools.ProgressBar;
+import com.senseei.huffman.utils.Constants;
 
 public class HuffmanFileHandler {
     public HuffmanTreeNode[] getBytesFrequencies(String file) throws IOException {
@@ -13,19 +14,21 @@ public class HuffmanFileHandler {
         ProgressBar progressBar = new ProgressBar(totalBytes, "Counting bytes frequencies...");
 
         HuffmanTreeNode[] frequencies = new HuffmanTreeNode[256];
-        byte buffer[] = new byte[1];
+        byte buffer[] = new byte[Constants.READ_BUFFER_SIZE];
 
+        int bytesRead;
         try (FileInputStream fis = new FileInputStream(file)) {
-            while (fis.read(buffer) != -1) {
-                progressBar.increment();
-                char b = (char) (buffer[0] & 0xFF);
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                progressBar.increment(bytesRead);
+                for (int i = 0; i < bytesRead; i++) {
+                    char b = (char) (buffer[i] & 0xFF);
                 
-                if (frequencies[b] == null){
-                    frequencies[b] = new HuffmanTreeNode(1, b);
-                    continue;
+                    if (frequencies[b] == null){
+                        frequencies[b] = new HuffmanTreeNode(1, b);
+                    } else {
+                        frequencies[b].incrementFrequency();
+                    }
                 }
-                    
-                frequencies[b].incrementFrequency();
             }
         }
         
