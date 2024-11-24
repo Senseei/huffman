@@ -54,11 +54,14 @@ public class Huffman implements Compresser {
                     for (int j = 0; j < bytesRead; j++) {
                         char b = (char) (buffer[j] & 0xFF);
     
-                        if (fis.available() == 1 && j == bytesRead - 1) {
-                            validBits = fis.read();
+                        if (fis.available() <= 0 && j == bytesRead - 2) {
+                            validBits = buffer[j++ + 1];
                         }
     
                         for (int i = 7; i >= 8 - validBits; i--) {
+                            int bit = (b >> i) & 1;
+                            current = bit == 0 ? current.getLeft() : current.getRight();
+
                             if (current.isLeaf()) {
                                 outputBuffer[outputBufferPos++] = (byte) current.getCharacter();
                                 if (outputBufferPos == outputBuffer.length) {
@@ -67,9 +70,6 @@ public class Huffman implements Compresser {
                                 }
                                 current = tree.getRoot();
                             }
-    
-                            int bit = (b >> i) & 1;
-                            current = bit == 0 ? current.getLeft() : current.getRight();
                         }
                     }
                 }
